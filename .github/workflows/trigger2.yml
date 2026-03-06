@@ -1,0 +1,25 @@
+name: 2-Vulnerable-Backend
+
+# Okida se TEK KADA se onaj prvi workflow završi
+on:
+  workflow_run:
+    workflows: ["1-PR-Trigger"]
+    types:
+      - completed
+
+jobs:
+  process-and-pwn:
+    runs-on: ubuntu-latest
+    env:
+      # Učitavamo tajnu u environment kontejnera
+      TAJNA_ZA_KRADU: ${{ secrets.BANK_VAULT_PASSWORD }}
+    steps:
+      - name: Ranjivi Bash Parser
+        run: |
+          echo "Započinjem procesuiranje podataka iz PR-a..."
+          
+          # OVDJE JE RUPA! Direktna interpolacija korisničkog unosa u Bash.
+          KORISNICKI_UNOS="${{ github.event.workflow_run.head_commit.message }}"
+          
+          echo "Naslov komita je: $KORISNICKI_UNOS"
+          echo "Procesiranje završeno."
